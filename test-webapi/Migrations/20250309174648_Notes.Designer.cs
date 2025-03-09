@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using test_webapi.Data;
 
@@ -11,9 +12,11 @@ using test_webapi.Data;
 namespace test_webapi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250309174648_Notes")]
+    partial class Notes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,42 +168,42 @@ namespace test_webapi.Migrations
                         {
                             NoteID = 1,
                             CustID = 1,
-                            Date = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 3, 9, 17, 46, 47, 905, DateTimeKind.Local).AddTicks(5407),
                             Notes = "Dummy note 1 for customer 1"
                         },
                         new
                         {
                             NoteID = 2,
                             CustID = 1,
-                            Date = new DateTime(2023, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 3, 9, 17, 46, 47, 907, DateTimeKind.Local).AddTicks(9838),
                             Notes = "Dummy note 2 for customer 1"
                         },
                         new
                         {
                             NoteID = 3,
                             CustID = 2,
-                            Date = new DateTime(2023, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 3, 9, 17, 46, 47, 907, DateTimeKind.Local).AddTicks(9874),
                             Notes = "Dummy note 1 for customer 2"
                         },
                         new
                         {
                             NoteID = 4,
                             CustID = 2,
-                            Date = new DateTime(2023, 1, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 3, 9, 17, 46, 47, 907, DateTimeKind.Local).AddTicks(9907),
                             Notes = "Dummy note 2 for customer 2"
                         },
                         new
                         {
                             NoteID = 5,
                             CustID = 3,
-                            Date = new DateTime(2023, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 3, 9, 17, 46, 47, 907, DateTimeKind.Local).AddTicks(9910),
                             Notes = "Dummy note 1 for customer 3"
                         },
                         new
                         {
                             NoteID = 6,
                             CustID = 3,
-                            Date = new DateTime(2023, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 3, 9, 17, 46, 47, 907, DateTimeKind.Local).AddTicks(9913),
                             Notes = "Dummy note 2 for customer 3"
                         });
                 });
