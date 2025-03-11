@@ -1,0 +1,84 @@
+.customers-container {
+  padding: 1rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.customers-container.dark {
+  background-color: #282c34;
+  color: white;
+}
+
+.customers-container.light {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.customers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.customer-card {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dark .customer-card {
+  --card-bg: #1a1e24;
+  --link-color: #61dafb;
+}
+
+.light .customer-card {
+  --card-bg: white;
+  --link-color: #0066cc;
+}
+
+.customer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.customer-card h3 {
+  color: var(--link-color);
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.customer-card .address {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.customer-card p {
+  margin: 0.5rem 0;
+}
+
+.notes-link {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--link-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.notes-link:hover {
+  background-color: var(--link-hover);
+  transform: translateY(-1px);
+}
+
+.dark .notes-link:hover {
+  --link-hover: #4fa8c6;
+}
+
+.light .notes-link:hover {
+  --link-hover: #0052a3;
+}
