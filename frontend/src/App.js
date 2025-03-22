@@ -6,6 +6,7 @@ import './App.css';
 import AllForecasts from './components/AllForecasts';
 import AllCustomers from './components/AllCustomers';
 import CustomerNotes from './components/CustomerNotes';
+import CustomerSummary from './components/CustomerSummary';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import './components/AllForecasts.css';
 import './components/AllCustomers.css';
@@ -86,6 +87,7 @@ function AppContent() {
           <Route path="/" element={<RandomForecast />} />
           <Route path="/all" element={<AllForecasts />} />
           <Route path="/customers" element={<AllCustomers />} />
+          <Route path="/customers/:custId" element={<CustomerSummary />} />
           <Route path="/customers/:custId/notes" element={<CustomerNotes />} />
         </Routes>
       </header>

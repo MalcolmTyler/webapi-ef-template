@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
+import { IconButton } from '@mui/material';
+import { Delete as DeleteIcon } from '@mui/icons-material';
 import './AllCustomers.css';
 
 function AllCustomers() {
@@ -27,6 +29,8 @@ function AllCustomers() {
     email: '',
     mailshot: false
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCustomersAndNotes();
@@ -122,6 +126,32 @@ function AllCustomers() {
         mailshot: false
       });
       setShowForm(false);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleCustomerClick = (custId) => {
+    navigate(`/customers/${custId}`);
+  };
+
+  const handleDeleteCustomer = async (custId, e) => {
+    e.stopPropagation(); // Prevent card click when clicking delete button
+    
+    if (!window.confirm('Are you sure you want to delete this customer? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5207/api/Customers/${custId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete customer');
+      }
+
+      setCustomers(prev => prev.filter(c => c.custID !== custId));
     } catch (err) {
       setError(err.message);
     }
@@ -265,7 +295,20 @@ function AllCustomers() {
       {filteredCustomers.length > 0 ? (
         <div className="customers-grid">
           {filteredCustomers.map(customer => (
-            <div key={customer.custID} className="customer-card">
+            <div 
+              key={customer.custID} 
+              className="customer-card"
+              onClick={() => handleCustomerClick(customer.custID)}
+            >
+              <div className="card-actions">
+                <IconButton 
+                  onClick={(e) => handleDeleteCustomer(customer.custID, e)} 
+                  size="small"
+                  color="error"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </div>
               <h3>{customer.companyName}</h3>
               <p>Contact: {customer.contactTitle} {customer.contactFirstNames} {customer.contactSurname}</p>
               <p>Email: {customer.email}</p>
@@ -278,12 +321,9 @@ function AllCustomers() {
                 <p>{customer.postcode}</p>
               </div>
               {customerNotes[customer.custID] > 0 && (
-                <Link 
-                  to={`/customers/${customer.custID}/notes`} 
-                  className="notes-link"
-                >
-                  View Notes ({customerNotes[customer.custID]})
-                </Link>
+                <div className="notes-count">
+                  Notes: {customerNotes[customer.custID]}
+                </div>
               )}
             </div>
           ))}

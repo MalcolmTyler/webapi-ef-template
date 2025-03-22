@@ -18,6 +18,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  padding: 15px;
 }
 
 .add-customer-btn {
@@ -94,11 +95,13 @@
 }
 
 .customer-card {
+  position: relative;
   background-color: #f8f9fa;
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 
 .dark .customer-card {
@@ -114,6 +117,18 @@
 .customer-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-actions {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.customer-card:hover .card-actions {
+  opacity: 1;
 }
 
 .customer-card h3 {
@@ -162,9 +177,24 @@
   --link-hover: #0052a3;
 }
 
+.notes-count {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: var(--link-color);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.dark .notes-count {
+  background-color: #66b3ff;
+}
+
 .search-container {
   margin-bottom: 20px;
-  width: 100%;
+  width: 20%;
+  padding: 15px;
 }
 
 .search-input {
