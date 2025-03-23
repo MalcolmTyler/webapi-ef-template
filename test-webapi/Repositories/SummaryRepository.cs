@@ -28,7 +28,7 @@ namespace test_webapi.Repositories
 
         public async Task AddSummaryAsync(Summary summary)
         {
-            _context.Summaries.Add(summary);
+            await _context.Summaries.AddAsync(summary);
             await _context.SaveChangesAsync();
         }
 

@@ -8,7 +8,7 @@ namespace test_webapi.Repositories
     public interface ISummaryRepository
     {
         Task<IEnumerable<Summary>> GetSummariesAsync();
-        Task<Summary> GetSummaryAsync(int id);
+        Task<Summary?> GetSummaryAsync(int id);
         Task AddSummaryAsync(Summary summary);
         Task UpdateSummaryAsync(Summary summary);
         Task DeleteSummaryAsync(int id);
