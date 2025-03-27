@@ -49,7 +49,9 @@ namespace test_webapi.Services
             };
 
             var result = await _repository.AddAsync(holding);
-            return MapToDto(result);
+            // Reload the entity with navigation properties
+            var createdHolding = await _repository.GetByIdAsync(result.HoldingID);
+            return MapToDto(createdHolding!);
         }
 
         public async Task UpdateHoldingAsync(int id, PlantHoldingDto holdingDto)
@@ -81,7 +83,9 @@ namespace test_webapi.Services
                 PlantNameID = holding.PlantNameID,
                 SerialNumber = holding.SerialNumber,
                 StatusID = holding.StatusID,
-                SWL = holding.SWL
+                SWL = holding.SWL,
+                PlantDescription = holding.Plant?.PlantDescription,
+                StatusDescription = holding.Status?.StatusDescription
             };
         }
     }

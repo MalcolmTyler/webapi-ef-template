@@ -55,10 +55,11 @@ namespace test_webapi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateHolding(int id, PlantHoldingDto holdingDto)
+        public async Task<ActionResult<PlantHoldingDto>> UpdateHolding(int id, PlantHoldingDto holdingDto)
         {
             await _service.UpdateHoldingAsync(id, holdingDto);
-            return NoContent();
+            var updatedHolding = await _service.GetHoldingByIdAsync(id);
+            return Ok(updatedHolding);
         }
 
         [HttpDelete("{id}")]

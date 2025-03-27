@@ -15,15 +15,12 @@ namespace test_webapi.Repositories
 
         public async Task<IEnumerable<Status>> GetStatusAsync()
         {
-            return await _context.Status
-                .Include(s => s.StatusDescription)
-                .ToListAsync();
+            return await _context.Status.ToListAsync();
         }
 
         public async Task<Status?> GetStatusAsync(int id)
         {
             return await _context.Status
-                .Include(s => s.StatusDescription)
                 .FirstOrDefaultAsync(s => s.StatusID == id);
         }
 

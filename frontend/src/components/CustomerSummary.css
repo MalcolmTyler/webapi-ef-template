@@ -205,3 +205,40 @@
 .dark .MuiTabs-indicator {
   background-color: var(--link-color);
 }
+
+.plant-holdings-section {
+  margin-top: 1rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.holdings-table {
+  margin-bottom: 2rem;
+}
+
+.dark .holdings-table {
+  background-color: var(--card-bg);
+}
+
+.dark .MuiTableCell-root {
+  color: rgba(255, 255, 255, 0.87);
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark .MuiTableHead-root .MuiTableCell-root {
+  color: var(--link-color);
+}
+
+.no-holdings {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.dark .no-holdings {
+  color: #999;
+}

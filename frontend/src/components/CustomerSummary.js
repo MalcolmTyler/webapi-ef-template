@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { 
@@ -10,7 +10,18 @@ import {
   DialogContent, 
   DialogActions,
   TextField,
-  IconButton
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
 import './CustomerSummary.css';
@@ -22,6 +33,7 @@ function CustomerSummary() {
   const [activeTab, setActiveTab] = useState(0);
   const [customer, setCustomer] = useState(null);
   const [notes, setNotes] = useState([]);
+  const [plantHoldings, setPlantHoldings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -29,12 +41,19 @@ function CustomerSummary() {
   const [noteDialogOpen, setNoteDialogOpen] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
   const [newNoteText, setNewNoteText] = useState('');
+  const [plantHoldingDialogOpen, setPlantHoldingDialogOpen] = useState(false);
+  const [editingPlantHolding, setEditingPlantHolding] = useState(null);
+  const [allPlants, setAllPlants] = useState([]);
+  const [allStatuses, setAllStatuses] = useState([]);
+  const [newPlantHolding, setNewPlantHolding] = useState({
+    custID: null,
+    plantNameID: '',
+    serialNumber: '',
+    statusID: '',
+    swl: ''
+  });
 
-  useEffect(() => {
-    fetchCustomerAndNotes();
-  }, [custId]);
-
-  const fetchCustomerAndNotes = async () => {
+  const fetchCustomerAndNotes = useCallback(async () => {
     try {
       const [customerResponse, notesResponse] = await Promise.all([
         fetch(`http://localhost:5207/api/Customers/${custId}`),
@@ -61,7 +80,49 @@ function CustomerSummary() {
       setError(err.message);
       setLoading(false);
     }
-  };
+  }, [custId]);
+
+  const fetchPlantHoldings = useCallback(async () => {
+    try {
+      const response = await fetch(`http://localhost:5207/api/PlantHolding/customer/${custId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch plant holdings');
+      }
+      const data = await response.json();
+      setPlantHoldings(data);
+    } catch (err) {
+      setError(err.message);
+    }
+  }, [custId]);
+
+  const fetchPlantAndStatusOptions = useCallback(async () => {
+    try {
+      const [plantsResponse, statusesResponse] = await Promise.all([
+        fetch('http://localhost:5207/api/AllPlant'),
+        fetch('http://localhost:5207/api/Status')
+      ]);
+
+      if (!plantsResponse.ok || !statusesResponse.ok) {
+        throw new Error('Failed to fetch options');
+      }
+
+      const [plantsData, statusesData] = await Promise.all([
+        plantsResponse.json(),
+        statusesResponse.json()
+      ]);
+
+      setAllPlants(plantsData);
+      setAllStatuses(statusesData);
+    } catch (err) {
+      setError(err.message);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCustomerAndNotes();
+    fetchPlantHoldings();
+    fetchPlantAndStatusOptions();
+  }, [fetchCustomerAndNotes, fetchPlantHoldings, fetchPlantAndStatusOptions]);
 
   const handleBack = () => {
     navigate('/customers');
@@ -74,7 +135,7 @@ function CustomerSummary() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(editingCustomer)
+        body: JSON.stringify(editingCustomer),
       });
 
       if (!response.ok) {
@@ -89,7 +150,7 @@ function CustomerSummary() {
   };
 
   const handleDeleteCustomer = async () => {
-    if (!window.confirm('Are you sure you want to delete this customer? This action cannot be undone.')) {
+    if (!window.confirm('Are you sure you want to delete this customer?')) {
       return;
     }
 
@@ -193,6 +254,96 @@ function CustomerSummary() {
     }
   };
 
+  const handlePlantHoldingChange = (e) => {
+    const { name, value } = e.target;
+    setNewPlantHolding(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleCreatePlantHolding = async () => {
+    try {
+      const response = await fetch('http://localhost:5207/api/PlantHolding', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...newPlantHolding,
+          custID: parseInt(custId),
+          plantNameID: parseInt(newPlantHolding.plantNameID),
+          statusID: parseInt(newPlantHolding.statusID)
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create plant holding');
+      }
+
+      const createdHolding = await response.json();
+      // Add the new holding with the complete data from the server
+      setPlantHoldings(prev => [...prev, createdHolding]);
+      setPlantHoldingDialogOpen(false);
+      resetPlantHoldingForm();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleUpdatePlantHolding = async () => {
+    try {
+      const response = await fetch(`http://localhost:5207/api/PlantHolding/${editingPlantHolding.holdingID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...newPlantHolding,
+          holdingID: editingPlantHolding.holdingID,
+          custID: parseInt(custId),
+          plantNameID: parseInt(newPlantHolding.plantNameID),
+          statusID: parseInt(newPlantHolding.statusID)
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update plant holding');
+      }
+
+      const updatedHolding = await response.json();
+      setPlantHoldings(prev => prev.map(holding => 
+        holding.holdingID === editingPlantHolding.holdingID
+          ? updatedHolding
+          : holding
+      ));
+      setPlantHoldingDialogOpen(false);
+      resetPlantHoldingForm();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDeletePlantHolding = async (holdingId) => {
+    if (!window.confirm('Are you sure you want to delete this plant holding?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5207/api/PlantHolding/${holdingId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete plant holding');
+      }
+
+      setPlantHoldings(prev => prev.filter(holding => holding.holdingID !== holdingId));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const openCreateNoteDialog = () => {
     setEditingNote(null);
     setNewNoteText('');
@@ -203,6 +354,33 @@ function CustomerSummary() {
     setEditingNote(note);
     setNewNoteText(note.notes);
     setNoteDialogOpen(true);
+  };
+
+  const openCreatePlantHoldingDialog = () => {
+    setEditingPlantHolding(null);
+    resetPlantHoldingForm();
+    setPlantHoldingDialogOpen(true);
+  };
+
+  const openEditPlantHoldingDialog = (holding) => {
+    setEditingPlantHolding(holding);
+    setNewPlantHolding({
+      plantNameID: holding.plantNameID?.toString() || '',
+      serialNumber: holding.serialNumber || '',
+      statusID: holding.statusID?.toString() || '',
+      swl: holding.swl || ''
+    });
+    setPlantHoldingDialogOpen(true);
+  };
+
+  const resetPlantHoldingForm = () => {
+    setNewPlantHolding({
+      custID: null,
+      plantNameID: '',
+      serialNumber: '',
+      statusID: '',
+      swl: ''
+    });
   };
 
   if (loading) return (
@@ -245,6 +423,7 @@ function CustomerSummary() {
       >
         <Tab label="Customer Details" />
         <Tab label={`Notes (${notes.length})`} />
+        <Tab label={`Plant Holdings (${plantHoldings.length})`} />
       </Tabs>
 
       <div className="tab-content">
@@ -272,7 +451,7 @@ function CustomerSummary() {
               <p><strong>Mailshot:</strong> {customer?.mailshot ? 'Yes' : 'No'}</p>
             </div>
           </div>
-        ) : (
+        ) : activeTab === 1 ? (
           <div className="notes-section">
             <div className="notes-header">
               <Button
@@ -311,6 +490,53 @@ function CustomerSummary() {
               </div>
             ) : (
               <p className="no-notes">No notes available for this customer.</p>
+            )}
+          </div>
+        ) : (
+          <div className="plant-holdings-section">
+            <div className="section-header">
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={openCreatePlantHoldingDialog}
+              >
+                Add Plant Holding
+              </Button>
+            </div>
+            <TableContainer component={Paper} className="holdings-table">
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Plant Name</TableCell>
+                    <TableCell>Serial Number</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>SWL</TableCell>
+                    <TableCell align="right">Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {plantHoldings.map(holding => (
+                    <TableRow key={holding.holdingID}>
+                      <TableCell>{holding.plantDescription || 'N/A'}</TableCell>
+                      <TableCell>{holding.serialNumber}</TableCell>
+                      <TableCell>{holding.statusDescription || 'N/A'}</TableCell>
+                      <TableCell>{holding.swl}</TableCell>
+                      <TableCell align="right">
+                        <IconButton size="small" onClick={() => openEditPlantHoldingDialog(holding)}>
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton size="small" color="error" onClick={() => handleDeletePlantHolding(holding.holdingID)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            {plantHoldings.length === 0 && (
+              <p className="no-holdings">No plant holdings found for this customer.</p>
             )}
           </div>
         )}
@@ -460,6 +686,68 @@ function CustomerSummary() {
             disabled={!newNoteText.trim()}
           >
             {editingNote ? 'Update' : 'Create'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={plantHoldingDialogOpen} onClose={() => setPlantHoldingDialogOpen(false)}>
+        <DialogTitle>{editingPlantHolding ? 'Edit Plant Holding' : 'Create New Plant Holding'}</DialogTitle>
+        <DialogContent>
+          <div className="dialog-form">
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Plant Name</InputLabel>
+              <Select
+                name="plantNameID"
+                value={newPlantHolding.plantNameID}
+                onChange={handlePlantHoldingChange}
+              >
+                {allPlants.map(plant => (
+                  <MenuItem key={plant.plantNameID} value={plant.plantNameID}>
+                    {plant.plantDescription}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="Serial Number"
+              name="serialNumber"
+              value={newPlantHolding.serialNumber}
+              onChange={handlePlantHoldingChange}
+              fullWidth
+              margin="normal"
+            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Status</InputLabel>
+              <Select
+                name="statusID"
+                value={newPlantHolding.statusID}
+                onChange={handlePlantHoldingChange}
+              >
+                {allStatuses.map(status => (
+                  <MenuItem key={status.statusID} value={status.statusID}>
+                    {status.statusDescription}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="SWL"
+              name="swl"
+              value={newPlantHolding.swl}
+              onChange={handlePlantHoldingChange}
+              fullWidth
+              margin="normal"
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPlantHoldingDialogOpen(false)}>Cancel</Button>
+          <Button 
+            onClick={editingPlantHolding ? handleUpdatePlantHolding : handleCreatePlantHolding}
+            variant="contained" 
+            color="primary"
+          >
+            {editingPlantHolding ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
       </Dialog>

@@ -60,8 +60,21 @@ namespace test_webapi.Repositories
 
         public async Task UpdateAsync(PlantHolding plantHolding)
         {
-            _context.Entry(plantHolding).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var existingHolding = await _context.PlantHoldings
+                .Include(p => p.Plant)
+                .Include(p => p.Status)
+                .FirstOrDefaultAsync(p => p.HoldingID == plantHolding.HoldingID);
+
+            if (existingHolding != null)
+            {
+                existingHolding.CustID = plantHolding.CustID;
+                existingHolding.PlantNameID = plantHolding.PlantNameID;
+                existingHolding.SerialNumber = plantHolding.SerialNumber;
+                existingHolding.StatusID = plantHolding.StatusID;
+                existingHolding.SWL = plantHolding.SWL;
+
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteAsync(int id)
