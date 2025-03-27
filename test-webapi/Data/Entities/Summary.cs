@@ -1,4 +1,4 @@
-namespace test_webapi.Entities
+namespace test_webapi.Data.Entities
 {
     public class Summary
     {

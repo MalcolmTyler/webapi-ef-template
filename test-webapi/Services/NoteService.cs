@@ -1,5 +1,5 @@
 using test_webapi.DTOs;
-using test_webapi.Entities;
+using test_webapi.Data.Entities;
 using test_webapi.Repositories;
 
 namespace test_webapi.Services

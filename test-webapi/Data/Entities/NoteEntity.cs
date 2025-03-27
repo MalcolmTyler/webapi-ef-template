@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace test_webapi.Entities
+namespace test_webapi.Data.Entities
 {
     public class NoteEntity
     {

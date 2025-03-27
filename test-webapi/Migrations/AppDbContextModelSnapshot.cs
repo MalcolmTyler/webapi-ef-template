@@ -48,24 +48,7 @@ namespace test_webapi.Migrations
                     b.ToTable("AllPlant");
                 });
 
-            modelBuilder.Entity("test_webapi.Data.Entities.PlantCategoryEntity", b =>
-                {
-                    b.Property<int>("CategoryID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryID"));
-
-                    b.Property<string>("CategoryDescription")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("CategoryID");
-
-                    b.ToTable("PlantCategories");
-                });
-
-            modelBuilder.Entity("test_webapi.Entities.CustomerEntity", b =>
+            modelBuilder.Entity("test_webapi.Data.Entities.CustomerEntity", b =>
                 {
                     b.Property<int>("CustID")
                         .ValueGeneratedOnAdd()
@@ -1831,7 +1814,7 @@ namespace test_webapi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("test_webapi.Entities.NoteEntity", b =>
+            modelBuilder.Entity("test_webapi.Data.Entities.NoteEntity", b =>
                 {
                     b.Property<int>("NoteID")
                         .ValueGeneratedOnAdd()
@@ -3255,7 +3238,75 @@ namespace test_webapi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("test_webapi.Entities.Summary", b =>
+            modelBuilder.Entity("test_webapi.Data.Entities.PlantCategoryEntity", b =>
+                {
+                    b.Property<int>("CategoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryID"));
+
+                    b.Property<string>("CategoryDescription")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("CategoryID");
+
+                    b.ToTable("PlantCategories");
+                });
+
+            modelBuilder.Entity("test_webapi.Data.Entities.PlantHolding", b =>
+                {
+                    b.Property<int>("HoldingID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HoldingID"));
+
+                    b.Property<int?>("CustID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PlantNameID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SWL")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SerialNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("StatusID")
+                        .HasColumnType("int");
+
+                    b.HasKey("HoldingID");
+
+                    b.HasIndex("CustID");
+
+                    b.HasIndex("PlantNameID");
+
+                    b.HasIndex("StatusID");
+
+                    b.ToTable("PlantHoldings");
+                });
+
+            modelBuilder.Entity("test_webapi.Data.Entities.Status", b =>
+                {
+                    b.Property<int>("StatusID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StatusID"));
+
+                    b.Property<string>("StatusDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("StatusID");
+
+                    b.ToTable("Status");
+                });
+
+            modelBuilder.Entity("test_webapi.Data.Entities.Summary", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3335,9 +3386,38 @@ namespace test_webapi.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("test_webapi.Data.Entities.PlantHolding", b =>
+                {
+                    b.HasOne("test_webapi.Data.Entities.CustomerEntity", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("test_webapi.Data.Entities.AllPlantEntity", "Plant")
+                        .WithMany()
+                        .HasForeignKey("PlantNameID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("test_webapi.Data.Entities.Status", "Status")
+                        .WithMany("PlantHoldings")
+                        .HasForeignKey("StatusID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Plant");
+
+                    b.Navigation("Status");
+                });
+
             modelBuilder.Entity("test_webapi.Data.Entities.PlantCategoryEntity", b =>
                 {
                     b.Navigation("Plants");
+                });
+
+            modelBuilder.Entity("test_webapi.Data.Entities.Status", b =>
+                {
+                    b.Navigation("PlantHoldings");
                 });
 #pragma warning restore 612, 618
         }

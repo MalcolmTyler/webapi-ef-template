@@ -1,4 +1,4 @@
-using test_webapi.Entities;
+using test_webapi.Data.Entities;
 
 namespace test_webapi.Repositories
 {

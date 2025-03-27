@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using test_webapi.Data;
 using test_webapi.DTOs;
-using test_webapi.Entities;
+using test_webapi.Data.Entities;
 
 namespace test_webapi.Services
 {

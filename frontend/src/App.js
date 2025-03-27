@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { IconButton } from '@mui/material';
+import { IconButton, Menu, MenuItem } from '@mui/material';
 import { Brightness4, Brightness7 } from '@mui/icons-material';
 import './App.css';
 import AllForecasts from './components/AllForecasts';
 import AllCustomers from './components/AllCustomers';
 import CustomerNotes from './components/CustomerNotes';
 import CustomerSummary from './components/CustomerSummary';
+import PlantCategories from './components/PlantCategories';
+import ManagePlant from './components/ManagePlant';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import './components/AllForecasts.css';
 import './components/AllCustomers.css';
 import './components/CustomerNotes.css';
+import './components/PlantCategories.css';
+import './components/ManagePlant.css';
 
 function RandomForecast() {
   const [weatherData, setWeatherData] = useState(null);
@@ -68,6 +72,15 @@ function RandomForecast() {
 
 function AppContent() {
   const { isDarkMode, toggleTheme } = useTheme();
+  const [plantMenuAnchor, setPlantMenuAnchor] = useState(null);
+  
+  const handlePlantMenuOpen = (event) => {
+    setPlantMenuAnchor(event.currentTarget);
+  };
+
+  const handlePlantMenuClose = () => {
+    setPlantMenuAnchor(null);
+  };
   
   return (
     <div className={`App ${isDarkMode ? 'dark' : 'light'}`}>
@@ -77,6 +90,23 @@ function AppContent() {
             <Link to="/" className="nav-link home-link">🏠 Home</Link>
             <Link to="/all" className="nav-link">All Forecasts</Link>
             <Link to="/customers" className="nav-link">All Customers</Link>
+            <div>
+              <button className="nav-link plant-menu-button" onClick={handlePlantMenuOpen}>
+                Plant
+              </button>
+              <Menu
+                anchorEl={plantMenuAnchor}
+                open={Boolean(plantMenuAnchor)}
+                onClose={handlePlantMenuClose}
+              >
+                <MenuItem onClick={handlePlantMenuClose} component={Link} to="/plant-categories">
+                  Plant Categories
+                </MenuItem>
+                <MenuItem onClick={handlePlantMenuClose} component={Link} to="/manage-plant">
+                  Manage Plant
+                </MenuItem>
+              </Menu>
+            </div>
           </div>
           <IconButton onClick={toggleTheme} color="inherit" className="theme-toggle">
             {isDarkMode ? <Brightness7 /> : <Brightness4 />}
@@ -89,6 +119,8 @@ function AppContent() {
           <Route path="/customers" element={<AllCustomers />} />
           <Route path="/customers/:custId" element={<CustomerSummary />} />
           <Route path="/customers/:custId/notes" element={<CustomerNotes />} />
+          <Route path="/plant-categories" element={<PlantCategories />} />
+          <Route path="/manage-plant" element={<ManagePlant />} />
         </Routes>
       </header>
     </div>

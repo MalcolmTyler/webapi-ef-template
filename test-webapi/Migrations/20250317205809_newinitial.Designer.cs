@@ -25,7 +25,7 @@ namespace test_webapi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("test_webapi.Entities.CustomerEntity", b =>
+            modelBuilder.Entity("test_webapi.Data.Entities.CustomerEntity", b =>
                 {
                     b.Property<int>("CustID")
                         .ValueGeneratedOnAdd()
@@ -1791,7 +1791,7 @@ namespace test_webapi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("test_webapi.Entities.NoteEntity", b =>
+            modelBuilder.Entity("test_webapi.Data.Entities.NoteEntity", b =>
                 {
                     b.Property<int>("NoteID")
                         .ValueGeneratedOnAdd()
@@ -3215,7 +3215,7 @@ namespace test_webapi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("test_webapi.Entities.Summary", b =>
+            modelBuilder.Entity("test_webapi.Data.Entities.Summary", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
