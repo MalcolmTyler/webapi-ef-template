@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using test_webapi.Data;
 
@@ -11,9 +12,11 @@ using test_webapi.Data;
 namespace test_webapi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250328183148_RestrictPlantDeletion")]
+    partial class RestrictPlantDeletion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3381,8 +3384,7 @@ namespace test_webapi.Migrations
                 {
                     b.HasOne("test_webapi.Data.Entities.PlantCategoryEntity", "Category")
                         .WithMany("Plants")
-                        .HasForeignKey("PlantCategory")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("PlantCategory");
 
                     b.Navigation("Category");
                 });
@@ -3392,7 +3394,7 @@ namespace test_webapi.Migrations
                     b.HasOne("test_webapi.Data.Entities.CustomerEntity", "Customer")
                         .WithMany()
                         .HasForeignKey("CustID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("test_webapi.Data.Entities.AllPlantEntity", "Plant")
                         .WithMany()

@@ -140,6 +140,11 @@ function ManagePlant() {
       });
 
       if (!response.ok) {
+        // Try to get the error message from the response
+        const errorData = await response.text();
+        if (response.status === 500 && errorData.includes("DELETE statement conflicted with the REFERENCE constraint")) {
+          throw new Error('This plant cannot be deleted because it is currently in use');
+        }
         throw new Error('Failed to delete plant');
       }
 

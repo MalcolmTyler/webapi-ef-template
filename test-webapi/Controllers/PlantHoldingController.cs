@@ -16,14 +16,14 @@ namespace test_webapi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PlantHoldingDto>>> GetAllHoldings()
+        public async Task<ActionResult<IEnumerable<PlantHoldingReadDto>>> GetAllHoldings()
         {
             var holdings = await _service.GetAllHoldingsAsync();
             return Ok(holdings);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PlantHoldingDto>> GetHolding(int id)
+        public async Task<ActionResult<PlantHoldingReadDto>> GetHolding(int id)
         {
             var holding = await _service.GetHoldingByIdAsync(id);
             if (holding == null)
@@ -34,31 +34,30 @@ namespace test_webapi.Controllers
         }
 
         [HttpGet("customer/{customerId}")]
-        public async Task<ActionResult<IEnumerable<PlantHoldingDto>>> GetByCustomer(int customerId)
+        public async Task<ActionResult<IEnumerable<PlantHoldingReadDto>>> GetByCustomer(int customerId)
         {
             var holdings = await _service.GetHoldingsByCustomerAsync(customerId);
             return Ok(holdings);
         }
 
         [HttpGet("status/{statusId}")]
-        public async Task<ActionResult<IEnumerable<PlantHoldingDto>>> GetByStatus(int statusId)
+        public async Task<ActionResult<IEnumerable<PlantHoldingReadDto>>> GetByStatus(int statusId)
         {
             var holdings = await _service.GetHoldingsByStatusAsync(statusId);
             return Ok(holdings);
         }
 
         [HttpPost]
-        public async Task<ActionResult<PlantHoldingDto>> CreateHolding(PlantHoldingDto holdingDto)
+        public async Task<ActionResult<PlantHoldingReadDto>> CreateHolding(PlantHoldingDto holdingDto)
         {
-            var result = await _service.CreateHoldingAsync(holdingDto);
-            return CreatedAtAction(nameof(GetHolding), new { id = result.HoldingID }, result);
+            var createdHolding = await _service.CreateHoldingAsync(holdingDto);
+            return CreatedAtAction(nameof(GetHolding), new { id = createdHolding.HoldingID }, createdHolding);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<PlantHoldingDto>> UpdateHolding(int id, PlantHoldingDto holdingDto)
+        public async Task<ActionResult<PlantHoldingReadDto>> UpdateHolding(int id, PlantHoldingDto holdingDto)
         {
-            await _service.UpdateHoldingAsync(id, holdingDto);
-            var updatedHolding = await _service.GetHoldingByIdAsync(id);
+            var updatedHolding = await _service.UpdateHoldingAsync(id, holdingDto);
             return Ok(updatedHolding);
         }
 

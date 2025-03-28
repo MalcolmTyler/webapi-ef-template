@@ -13,31 +13,31 @@ namespace test_webapi.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<PlantHoldingDto>> GetAllHoldingsAsync()
+        public async Task<IEnumerable<PlantHoldingReadDto>> GetAllHoldingsAsync()
         {
             var holdings = await _repository.GetAllAsync();
-            return holdings.Select(MapToDto);
+            return holdings.Select(MapToReadDto);
         }
 
-        public async Task<PlantHoldingDto?> GetHoldingByIdAsync(int id)
+        public async Task<PlantHoldingReadDto?> GetHoldingByIdAsync(int id)
         {
             var holding = await _repository.GetByIdAsync(id);
-            return holding != null ? MapToDto(holding) : null;
+            return holding != null ? MapToReadDto(holding) : null;
         }
 
-        public async Task<IEnumerable<PlantHoldingDto>> GetHoldingsByCustomerAsync(int customerId)
+        public async Task<IEnumerable<PlantHoldingReadDto>> GetHoldingsByCustomerAsync(int customerId)
         {
             var holdings = await _repository.GetByCustomerAsync(customerId);
-            return holdings.Select(MapToDto);
+            return holdings.Select(MapToReadDto);
         }
 
-        public async Task<IEnumerable<PlantHoldingDto>> GetHoldingsByStatusAsync(int statusId)
+        public async Task<IEnumerable<PlantHoldingReadDto>> GetHoldingsByStatusAsync(int statusId)
         {
             var holdings = await _repository.GetByStatusAsync(statusId);
-            return holdings.Select(MapToDto);
+            return holdings.Select(MapToReadDto);
         }
 
-        public async Task<PlantHoldingDto> CreateHoldingAsync(PlantHoldingDto holdingDto)
+        public async Task<PlantHoldingReadDto> CreateHoldingAsync(PlantHoldingDto holdingDto)
         {
             var holding = new PlantHolding
             {
@@ -51,10 +51,10 @@ namespace test_webapi.Services
             var result = await _repository.AddAsync(holding);
             // Reload the entity with navigation properties
             var createdHolding = await _repository.GetByIdAsync(result.HoldingID);
-            return MapToDto(createdHolding!);
+            return MapToReadDto(createdHolding!);
         }
 
-        public async Task UpdateHoldingAsync(int id, PlantHoldingDto holdingDto)
+        public async Task<PlantHoldingReadDto> UpdateHoldingAsync(int id, PlantHoldingDto holdingDto)
         {
             var holding = new PlantHolding
             {
@@ -67,6 +67,9 @@ namespace test_webapi.Services
             };
 
             await _repository.UpdateAsync(holding);
+            // Reload the entity with navigation properties to get updated descriptions
+            var updatedHolding = await _repository.GetByIdAsync(id);
+            return MapToReadDto(updatedHolding!);
         }
 
         public async Task DeleteHoldingAsync(int id)
@@ -74,9 +77,9 @@ namespace test_webapi.Services
             await _repository.DeleteAsync(id);
         }
 
-        private static PlantHoldingDto MapToDto(PlantHolding holding)
+        private static PlantHoldingReadDto MapToReadDto(PlantHolding holding)
         {
-            return new PlantHoldingDto
+            return new PlantHoldingReadDto
             {
                 HoldingID = holding.HoldingID,
                 CustID = holding.CustID,

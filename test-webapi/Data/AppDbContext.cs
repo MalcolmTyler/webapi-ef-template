@@ -82,25 +82,26 @@ namespace test_webapi.Data
             modelBuilder.Entity<AllPlantEntity>()
                 .HasOne(p => p.Category)
                 .WithMany(c => c.Plants)
-                .HasForeignKey(p => p.PlantCategory);
+                .HasForeignKey(p => p.PlantCategory)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PlantHolding>()
                 .HasOne(p => p.Customer)
                 .WithMany()
                 .HasForeignKey(p => p.CustID)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PlantHolding>()
                 .HasOne(p => p.Plant)
                 .WithMany()
                 .HasForeignKey(p => p.PlantNameID)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PlantHolding>()
                 .HasOne(p => p.Status)
                 .WithMany(s => s.PlantHoldings)
                 .HasForeignKey(p => p.StatusID)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

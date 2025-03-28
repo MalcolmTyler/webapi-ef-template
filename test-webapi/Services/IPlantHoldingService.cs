@@ -4,12 +4,12 @@ namespace test_webapi.Services
 {
     public interface IPlantHoldingService
     {
-        Task<IEnumerable<PlantHoldingDto>> GetAllHoldingsAsync();
-        Task<PlantHoldingDto?> GetHoldingByIdAsync(int id);
-        Task<IEnumerable<PlantHoldingDto>> GetHoldingsByCustomerAsync(int customerId);
-        Task<IEnumerable<PlantHoldingDto>> GetHoldingsByStatusAsync(int statusId);
-        Task<PlantHoldingDto> CreateHoldingAsync(PlantHoldingDto holdingDto);
-        Task UpdateHoldingAsync(int id, PlantHoldingDto holdingDto);
+        Task<IEnumerable<PlantHoldingReadDto>> GetAllHoldingsAsync();
+        Task<PlantHoldingReadDto?> GetHoldingByIdAsync(int id);
+        Task<IEnumerable<PlantHoldingReadDto>> GetHoldingsByCustomerAsync(int customerId);
+        Task<IEnumerable<PlantHoldingReadDto>> GetHoldingsByStatusAsync(int statusId);
+        Task<PlantHoldingReadDto> CreateHoldingAsync(PlantHoldingDto holdingDto);
+        Task<PlantHoldingReadDto> UpdateHoldingAsync(int id, PlantHoldingDto holdingDto);
         Task DeleteHoldingAsync(int id);
     }
 }
