@@ -16,6 +16,7 @@ namespace test_webapi.Data
         public DbSet<AllPlantEntity> AllPlants { get; set; }
         public DbSet<Status> Status { get; set; }
         public DbSet<PlantHolding> PlantHoldings { get; set; }
+        public DbSet<Inspection> Inspections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -101,6 +102,13 @@ namespace test_webapi.Data
                 .HasOne(p => p.Status)
                 .WithMany(s => s.PlantHoldings)
                 .HasForeignKey(p => p.StatusID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure Inspection relationship
+            modelBuilder.Entity<Inspection>()
+                .HasOne(i => i.PlantHolding)
+                .WithMany()
+                .HasForeignKey(i => i.HoldingID)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

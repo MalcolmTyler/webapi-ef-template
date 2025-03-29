@@ -398,3 +398,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+frontend/CertificateTemplate_Allen.docx
+frontend/CertificateTemplate_Allen.pdf

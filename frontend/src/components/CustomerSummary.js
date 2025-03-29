@@ -1,30 +1,38 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
-import { 
-  Tabs, 
-  Tab, 
-  Button, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
+import {
+  Button,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
   DialogActions,
   TextField,
-  IconButton,
+  Tabs,
+  Tab,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  MenuItem,
-  Select,
+  FormControl,
   InputLabel,
-  FormControl
+  Select,
+  MenuItem,
+  Collapse
 } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Add as AddIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon
+} from '@mui/icons-material';
 import './CustomerSummary.css';
+import InspectionList from './InspectionList';
 
 function CustomerSummary() {
   const { custId } = useParams();
@@ -52,6 +60,11 @@ function CustomerSummary() {
     statusID: '',
     swl: ''
   });
+  const [expandedHolding, setExpandedHolding] = useState(null);
+
+  const toggleHoldingExpand = (holdingId) => {
+    setExpandedHolding(expandedHolding === holdingId ? null : holdingId);
+  };
 
   const fetchCustomerAndNotes = useCallback(async () => {
     try {
@@ -517,20 +530,34 @@ function CustomerSummary() {
                 </TableHead>
                 <TableBody>
                   {plantHoldings.map(holding => (
-                    <TableRow key={holding.holdingID}>
-                      <TableCell>{holding.plantDescription || 'N/A'}</TableCell>
-                      <TableCell>{holding.serialNumber}</TableCell>
-                      <TableCell>{holding.statusDescription || 'N/A'}</TableCell>
-                      <TableCell>{holding.swl}</TableCell>
-                      <TableCell align="right">
-                        <IconButton size="small" onClick={() => openEditPlantHoldingDialog(holding)}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton size="small" color="error" onClick={() => handleDeletePlantHolding(holding.holdingID)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
+                    <React.Fragment key={holding.holdingID}>
+                      <TableRow>
+                        <TableCell>{holding.plantDescription || 'N/A'}</TableCell>
+                        <TableCell>{holding.serialNumber}</TableCell>
+                        <TableCell>{holding.statusDescription || 'N/A'}</TableCell>
+                        <TableCell>{holding.swl}</TableCell>
+                        <TableCell align="right">
+                          <IconButton size="small" onClick={() => toggleHoldingExpand(holding.holdingID)}>
+                            {expandedHolding === holding.holdingID ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                          </IconButton>
+                          <IconButton size="small" onClick={() => openEditPlantHoldingDialog(holding)}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton size="small" color="error" onClick={() => handleDeletePlantHolding(holding.holdingID)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell colSpan={5} style={{ paddingBottom: 0, paddingTop: 0 }}>
+                          <Collapse in={expandedHolding === holding.holdingID} timeout="auto" unmountOnExit>
+                            <div className="p-4 w-full">
+                              <InspectionList holdingId={holding.holdingID} />
+                            </div>
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                    </React.Fragment>
                   ))}
                 </TableBody>
               </Table>

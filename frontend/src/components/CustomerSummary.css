@@ -217,7 +217,11 @@
 }
 
 .holdings-table {
-  margin-bottom: 2rem;
+  margin-top: 1rem;
+}
+
+.holdings-table .MuiTableCell-root {
+  vertical-align: top;
 }
 
 .dark .holdings-table {
@@ -241,4 +245,31 @@
 
 .dark .no-holdings {
   color: #999;
+}
+
+/* Inspection list styles */
+.inspection-section {
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.dark .inspection-section {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.expand-button {
+  min-width: 40px;
+  padding: 4px;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.dark .MuiCollapse-root {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.light .MuiCollapse-root {
+  background-color: rgba(0, 0, 0, 0.02);
 }
