@@ -1,7 +1,8 @@
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { format } from 'date-fns';
 
-// Register a standard font (you can add more fonts if needed)
+// Register fonts
 Font.register({
     family: 'Helvetica',
     fonts: [
@@ -17,126 +18,263 @@ Font.register({
 const styles = StyleSheet.create({
     page: {
         padding: 30,
-        fontFamily: 'Helvetica'
+        fontFamily: 'Helvetica',
+        fontSize: 10
     },
-    header: {
-        fontSize: 18,
-        textAlign: 'center',
-        marginBottom: 20,
-        fontWeight: 'bold'
-    },
-    section: {
-        margin: 10,
-        padding: 10,
-        flexGrow: 1
-    },
-    row: {
+    headerContainer: {
         flexDirection: 'row',
+        alignItems: 'baseline',
+        alignSelf: 'flex-start',
+        borderBottom: '1 solid black',
+        paddingBottom: 2
+    },
+    skyText: {
+        fontSize: 48,
+        fontWeight: 'bold',
+        lineHeight: 1
+    },
+    technicalServicesText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginLeft: 5,
+        lineHeight: 1
+    },
+    recordBoxContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        marginTop: 10,
         marginBottom: 10
     },
-    label: {
-        width: 150,
+    recordBox: {
+        border: '1 solid black',
+        padding: '5 10',
+        alignSelf: 'flex-start'
+    },
+    table: {
+        width: '100%',
+        marginBottom: 10,
+        border: '1 solid black',
+        borderBottom: 'none'
+    },
+    tableRow: {
+        flexDirection: 'row',
+        borderBottom: '1 solid black',
+        minHeight: 20
+    },
+    headerRow: {
+        backgroundColor: '#f0f0f0'
+    },
+    leftColumn: {
+        width: '40%',
+        paddingRight: 5,
+        padding: 5,
+        borderRight: '1 solid black'
+    },
+    rightColumn: {
+        width: '60%',
+        paddingLeft: 5,
+        padding: 5
+    },
+    bold: {
         fontWeight: 'bold'
     },
-    value: {
-        flex: 1
+    declaration: {
+        marginTop: 10,
+        marginBottom: 10
     },
     footer: {
-        position: 'absolute',
-        bottom: 30,
-        left: 30,
-        right: 30
+        marginTop: 10
+    },
+    addressText: {
+        marginTop: 5
+    },
+    dateRecord: {
+        marginTop: 10,
+        fontWeight: 'bold',
+        textDecoration: 'underline'
     }
 });
 
-const InspectionCertificateTemplate = ({ inspection }) => (
-    <Document>
-        <Page size="A4" style={styles.page}>
-            <Text style={styles.header}>Plant Inspection Certificate</Text>
-            
-            <View style={styles.section}>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Plant Description:</Text>
-                    <Text style={styles.value}>{inspection.plantDescription || ''}</Text>
-                </View>
-                
-                <View style={styles.row}>
-                    <Text style={styles.label}>Serial Number:</Text>
-                    <Text style={styles.value}>{inspection.serialNumber || ''}</Text>
-                </View>
+const InspectionCertificateTemplate = ({ inspection }) => {
+    const currentDate = new Date();
+    const recordNumber = `${format(currentDate, 'yyyy/M')}/${inspection.custID}/${inspection.uniqueRef}`;
 
-                <View style={styles.row}>
-                    <Text style={styles.label}>Location:</Text>
-                    <Text style={styles.value}>{inspection.location || ''}</Text>
-                </View>
+    const formatDate = (date) => {
+        return date ? format(new Date(date), 'dd/MM/yyyy') : '';
+    };
 
-                <View style={styles.row}>
-                    <Text style={styles.label}>Inspection Date:</Text>
-                    <Text style={styles.value}>
-                        {inspection.inspectionDate ? new Date(inspection.inspectionDate).toLocaleDateString('en-GB') : ''}
+    return (
+        <Document>
+            <Page size="A4" style={styles.page}>
+                <View>
+                    <View style={styles.headerContainer}>
+                        <Text style={styles.skyText}>SKY</Text>
+                        <Text style={styles.technicalServicesText}>Technical Services</Text>
+                    </View>
+
+                    <View style={styles.recordBoxContainer}>
+                        <View style={styles.recordBox}>
+                            <Text>Record No: {recordNumber}</Text>
+                        </View>
+                    </View>
+
+                    <Text style={styles.mainTitle}>
+                        RECORD OF THOROUGH EXAMINATION OF LIFTING PLANT AND EQUIPMENT
+                    </Text>
+                    <Text style={styles.subTitle}>
+                        IN ACCORDANCE WITH THE LIFTING OPERATIONS AND LIFTING EQUIPMENT REGULATIONS 1998 (LOLER)
+                    </Text>
+
+                    <View style={styles.table}>
+                        <View style={[styles.tableRow, styles.headerRow]}>
+                            <View style={styles.leftColumn}><Text></Text></View>
+                            <View style={styles.rightColumn}>
+                                <Text>{inspection.categoryDescription || ''}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text>Description of equipment</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text>{inspection.plantDescription || ''}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text>Identification mark of equipment</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text>{inspection.serialNumber || ''}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text>Identification mark of Quick Hitch</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text></Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text>Name and address of owner of equipment</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text>
+                                    {inspection.companyName || ''}{'\n'}
+                                    {inspection.line1 || ''}{'\n'}
+                                    {inspection.line2 || ''}{'\n'}
+                                    {inspection.line3 || ''}{'\n'}
+                                    {inspection.line4 || ''}{'\n'}
+                                    {inspection.postcode || ''}
+                                </Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text style={styles.bold}>Date of the last thorough examination and identification of the record issued on that occasion</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text style={styles.bold}>{inspection.previousCheck || ''}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text>Safe working load or loads and (where relevant) corresponding radii</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text>{inspection.safeWorking || ''}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text>Details of any defects found (if none state NONE)</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text>{inspection.defects || 'NONE'}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text>Date(s) by which defects described above must be rectified</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text>{inspection.rectified || ''}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text>What parts if any were inaccessible?{'\n'}(TO BE COMPLETED ONLY AFTER A THOROUGH EXAMINATION OF A HOIST OR LIFT)</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text>Enclosed Parts of Hydraulic System</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text style={styles.bold}>Latest date by which the next thorough examination must be carried out</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text style={styles.bold}>{inspection.recentCheck || ''}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text>Examined at</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text>{inspection.location || ''}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <View style={styles.leftColumn}>
+                                <Text>Other notes</Text>
+                            </View>
+                            <View style={styles.rightColumn}>
+                                <Text style={styles.bold}>Always ensure that the correct operators instructions are with the machine and that the correct SWL is clearly visible. Where a quickhitch is fitted ensure that the operator understands the procedures and is competent to operate the hitch safely. For full SWL specifications always refer to manufacturers lifting/radii tables.</Text>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={styles.declaration}>
+                        <Text style={styles.bold}>Declaration</Text>
+                        <Text>
+                            I hereby declare that the equipment described in this record was thoroughly examined in accordance with the appropriate provisions and found free from any defect likely to affect safety other than those listed above on <Text style={styles.bold}>{formatDate(inspection.inspectionDate)}</Text> and that the above particulars are correct.
+                        </Text>
+                    </View>
+
+                    <Text>Engineering Surveyor</Text>
+
+                    <Text style={[styles.bold, styles.addressText]}>
+                        Name and address of person authenticating the record and responsible for the thorough examination.
+                    </Text>
+
+                    <Text style={styles.addressText}>
+                        Sky Technical Services Ltd{'\n'}
+                        4 Victoria Cottages{'\n'}
+                        Love Lane, Mayfield, E.Sussex. TN20 6EN.        Tel 01435 873355 / 07703 292932.       Email info@skytechnical.co.uk
+                    </Text>
+
+                    <Text style={styles.dateRecord}>
+                        Date the record is made  <Text style={styles.bold}>{formatDate(inspection.inspectionDate)}</Text>
                     </Text>
                 </View>
-
-                <View style={styles.row}>
-                    <Text style={styles.label}>Vehicle Inspected On:</Text>
-                    <Text style={styles.value}>{inspection.vehicleInspectedOn || ''}</Text>
-                </View>
-
-                <View style={styles.row}>
-                    <Text style={styles.label}>Recent Check:</Text>
-                    <Text style={styles.value}>{inspection.recentCheck || ''}</Text>
-                </View>
-
-                <View style={styles.row}>
-                    <Text style={styles.label}>Previous Check:</Text>
-                    <Text style={styles.value}>{inspection.previousCheck || ''}</Text>
-                </View>
-
-                <View style={styles.row}>
-                    <Text style={styles.label}>Safe Working:</Text>
-                    <Text style={styles.value}>{inspection.safeWorking || ''}</Text>
-                </View>
-
-                <View style={styles.row}>
-                    <Text style={styles.label}>Defects:</Text>
-                    <Text style={styles.value}>{inspection.defects || ''}</Text>
-                </View>
-
-                <View style={styles.row}>
-                    <Text style={styles.label}>Rectified:</Text>
-                    <Text style={styles.value}>{inspection.rectified || ''}</Text>
-                </View>
-
-                <View style={styles.row}>
-                    <Text style={styles.label}>Latest Date:</Text>
-                    <Text style={styles.value}>
-                        {inspection.latestDate ? new Date(inspection.latestDate).toLocaleDateString('en-GB') : ''}
-                    </Text>
-                </View>
-
-                <View style={styles.row}>
-                    <Text style={styles.label}>Test Details:</Text>
-                    <Text style={styles.value}>{inspection.testDetails || ''}</Text>
-                </View>
-
-                <View style={styles.row}>
-                    <Text style={styles.label}>Miscellaneous Notes:</Text>
-                    <Text style={styles.value}>{inspection.miscNotes || ''}</Text>
-                </View>
-            </View>
-
-            <View style={styles.footer}>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Inspector:</Text>
-                    <Text style={styles.value}>_________________________</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Date:</Text>
-                    <Text style={styles.value}>_________________________</Text>
-                </View>
-            </View>
-        </Page>
-    </Document>
-);
+            </Page>
+        </Document>
+    );
+};
 
 export default InspectionCertificateTemplate;
